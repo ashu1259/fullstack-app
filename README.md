@@ -2,6 +2,7 @@
 docker-compose up --build
 **Open browser:**
 http://localhost:3000
+
 <img width="1919" height="536" alt="image" src="https://github.com/user-attachments/assets/d4938b10-5b69-40cf-9804-b914656a7c8d" />
 
 **Push Images to Docker Hub**
