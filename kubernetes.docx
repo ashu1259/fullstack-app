@@ -1,0 +1,22 @@
+Install minikube
+winget install -e --id Kubernetes.minikube
+Commands
+1.	Delete all Kubernetes resources
+kubectl delete -f k8s/
+2.	Stop Minikube
+minikube stop
+3.	Start Minikube
+minikube start
+4.	Apply Kubernetes configs
+kubectl apply -f k8s/
+(we can apply one by one file also)
+5.	Check pods
+kubectl get pods
+6.	Check services
+		kubectl get svc
+7.	Open frontend service
+minikube service express-frontend-service
+8.	Quick Restart (Without Deleting Everything)
+kubectl rollout restart deployment/flask-backend
+kubectl rollout restart deployment/express-frontend
+
