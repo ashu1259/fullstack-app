@@ -10,3 +10,4 @@ backend/*.pyc
 
 # Docker
 *.log
+venv/

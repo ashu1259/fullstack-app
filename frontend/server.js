@@ -14,10 +14,10 @@ app.post("/submit", async (req, res) => {
   const { name, email } = req.body;
 
   try {
-    const response = await axios.post("http://backend:5000/process", {
-      name,
-      email
-    });
+    const response = await axios.post(
+  "http://flask-backend-service:5000/process",
+  { name, email }
+);
 
     res.render("index", { response: response.data.message });
   } catch (error) {
