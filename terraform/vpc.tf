@@ -1,61 +1,62 @@
 # vpc.tf
-module "vpc" {
-  source  = "terraform-aws-modules/vpc/aws"
-  version = "5.0.0"
 
-  name = "main-vpc"
-  cidr = "10.0.0.0/16"
+provider "aws" {
+  region = "ap-south-1"  # change as needed
+}
 
-  azs             = ["ap-south-1a", "ap-south-1b"]
-  public_subnets  = ["10.0.1.0/24", "10.0.2.0/24"]
+# VPC
+resource "aws_vpc" "main" {
+  cidr_block           = "10.0.0.0/16"
+  enable_dns_support   = true
   enable_dns_hostnames = true
+  tags = {
+    Name = "main-vpc"
+  }
 }
 
-# Create public subnets
+# Public Subnet A
 resource "aws_subnet" "public_a" {
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = "10.0.1.0/24"
-  availability_zone = "ap-south-1a"
-
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = "10.0.1.0/24"
+  availability_zone       = "ap-south-1a"
+  map_public_ip_on_launch = true
   tags = {
-    Name = "public-subnet-a"
+    Name = "public-a"
   }
 }
 
+# Public Subnet B
 resource "aws_subnet" "public_b" {
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = "10.0.2.0/24"
-  availability_zone = "ap-south-1b"
-
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = "10.0.2.0/24"
+  availability_zone       = "ap-south-1b"
+  map_public_ip_on_launch = true
   tags = {
-    Name = "public-subnet-b"
+    Name = "public-b"
   }
 }
 
-# Internet Gateway for public subnets
+# Internet Gateway
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.main.id
-
   tags = {
     Name = "main-igw"
   }
 }
 
-# Route Table for public subnets
+# Public Route Table
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.main.id
-
   route {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.igw.id
   }
-
   tags = {
-    Name = "public-route-table"
+    Name = "public-rt"
   }
 }
 
-# Associate public subnets with route table
+# Associate Subnets with Route Table
 resource "aws_route_table_association" "public_a" {
   subnet_id      = aws_subnet.public_a.id
   route_table_id = aws_route_table.public.id
@@ -64,54 +65,4 @@ resource "aws_route_table_association" "public_a" {
 resource "aws_route_table_association" "public_b" {
   subnet_id      = aws_subnet.public_b.id
   route_table_id = aws_route_table.public.id
-}
-
-# Security group for ALB
-resource "aws_security_group" "alb_sg" {
-  name        = "alb-sg"
-  description = "Allow HTTP traffic from anywhere"
-  vpc_id      = aws_vpc.main.id
-
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name = "alb-sg"
-  }
-}
-
-# Security group for ECS tasks
-resource "aws_security_group" "ecs_sg" {
-  name        = "ecs-sg"
-  description = "Allow traffic from ALB"
-  vpc_id      = aws_vpc.main.id
-
-  ingress {
-    from_port       = 0
-    to_port         = 0
-    protocol        = "-1"
-    security_groups = [aws_security_group.alb_sg.id]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name = "ecs-sg"
-  }
 }
