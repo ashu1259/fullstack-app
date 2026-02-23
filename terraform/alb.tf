@@ -7,19 +7,40 @@ resource "aws_lb" "main" {
   subnets            = aws_subnet.public[*].id
 }
 
-# Target Groups
 resource "aws_lb_target_group" "flask_tg" {
-  name     = "flask-tg"
-  port     = 5000
-  protocol = "HTTP"
-  vpc_id   = aws_vpc.main.id
+  name        = "flask-tg"
+  port        = 5000
+  protocol    = "HTTP"
+  vpc_id      = aws_vpc.main.id
+  target_type = "ip"   
+
+  health_check {
+    path                = "/"
+    protocol            = "HTTP"
+    matcher             = "200"
+    interval            = 30
+    timeout             = 5
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+  }
 }
 
 resource "aws_lb_target_group" "express_tg" {
-  name     = "express-tg"
-  port     = 3000
-  protocol = "HTTP"
-  vpc_id   = aws_vpc.main.id
+  name        = "express-tg"
+  port        = 3000
+  protocol    = "HTTP"
+  vpc_id      = aws_vpc.main.id
+  target_type = "ip"   
+
+  health_check {
+    path                = "/"
+    protocol            = "HTTP"
+    matcher             = "200"
+    interval            = 30
+    timeout             = 5
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+  }
 }
 
 # ALB Listener
