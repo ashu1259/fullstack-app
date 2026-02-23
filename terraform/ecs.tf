@@ -136,10 +136,10 @@ resource "aws_ecs_service" "express_service" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets         = aws_subnet.public.*.id
+    subnets         = aws_subnet.public[*].id  # Use wildcard instead of dot-star
     security_groups = [aws_security_group.ecs_sg.id]
     assign_public_ip = true
-  }
+}
 
   desired_count = 1
   depends_on = [aws_lb_listener_rule.express_rule]
