@@ -55,3 +55,22 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_policy" {
   role       = aws_iam_role.ecs_task_execution.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
+resource "aws_security_group" "ecs_sg" {
+  name        = "ecs-sg"
+  description = "Allow traffic from ALB"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress {
+    from_port       = 0
+    to_port         = 0
+    protocol        = "-1"
+    security_groups = [aws_security_group.alb_sg.id]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}

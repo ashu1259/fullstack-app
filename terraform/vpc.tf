@@ -1,12 +1,14 @@
 # vpc.tf
+module "vpc" {
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "5.0.0"
 
-# Create a VPC
-resource "aws_vpc" "main" {
-  cidr_block = "10.0.0.0/16"
+  name = "main-vpc"
+  cidr = "10.0.0.0/16"
 
-  tags = {
-    Name = "main-vpc"
-  }
+  azs             = ["ap-south-1a", "ap-south-1b"]
+  public_subnets  = ["10.0.1.0/24", "10.0.2.0/24"]
+  enable_dns_hostnames = true
 }
 
 # Create public subnets
