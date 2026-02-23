@@ -21,12 +21,31 @@ resource "aws_lb_listener" "http" {
     target_group_arn = aws_lb_target_group.flask_tg.arn
   }
 }
-terraform {
-  backend "s3" {
-    bucket         = "my-terraform-state-bucket"
-    key            = "ecs/terraform.tfstate"
-    region         = "us-west-2"
-    dynamodb_table = "terraform-lock"
-    encrypt        = true
+resource "aws_security_group" "alb_sg" {
+  name        = "alb-sg"
+  description = "Allow HTTP inbound"
+  vpc_id      = aws_vpc.main.id  # ensure aws_vpc.main exists
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
+#terraform {
+#  backend "s3" {
+#    bucket         = "my-terraform-state-bucket"
+#    key            = "ecs/terraform.tfstate"
+#    region         = "us-west-2"
+#    dynamodb_table = "terraform-lock"
+#    encrypt        = true
+#  }
+#}
