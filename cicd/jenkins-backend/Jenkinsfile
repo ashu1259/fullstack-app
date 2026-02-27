@@ -1,0 +1,23 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Clone') {
+            steps {
+                git 'https://github.com/ashu1259/fullstack-app.git'
+            }
+        }
+
+        stage('Build Backend Docker') {
+            steps {
+                sh 'docker build -t flask-backend ./backend'
+            }
+        }
+
+        stage('Restart Backend') {
+            steps {
+                sh 'docker-compose up -d backend'
+            }
+        }
+    }
+}

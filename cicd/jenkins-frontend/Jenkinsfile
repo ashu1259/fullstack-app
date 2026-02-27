@@ -1,0 +1,23 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Clone') {
+            steps {
+                git 'https://github.com/ashu1259/fullstack-app.git'
+            }
+        }
+
+        stage('Build Frontend Docker') {
+            steps {
+                sh 'docker build -t express-frontend ./frontend'
+            }
+        }
+
+        stage('Restart Frontend') {
+            steps {
+                sh 'docker-compose up -d frontend'
+            }
+        }
+    }
+}
