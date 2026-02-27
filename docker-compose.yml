@@ -1,4 +1,4 @@
-version: "3.8"
+version: "3"
 
 services:
   backend:
@@ -14,3 +14,17 @@ services:
       - "3000:3000"
     depends_on:
       - backend
+
+  jenkins:
+    build: ./cicd/jenkins
+    container_name: jenkins
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    privileged: true
+
+volumes:
+  jenkins_home:
